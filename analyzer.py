@@ -11,7 +11,6 @@ csvFileDirectory = './output'
 def analyzeAll(conn: sqlite3.Connection):
     analyzePerDayAndApp(conn)
     analyzePerDay(conn)
-    analyzePerDayManual(conn)
 
 def analyzePerDayAndApp(conn: sqlite3.Connection):
     cursor = conn.cursor()
@@ -67,34 +66,6 @@ def analyzePerDay(conn: sqlite3.Connection):
 
     saveAsCsv(
         'perDay.csv', [['fromFile', 'bucketName', 'day', 'durationSum']]+result)
-
-
-def analyzePerDayManual(conn: sqlite3.Connection):
-    cursor = conn.cursor()
-
-    cursor.execute(f''' 
-    SELECT
-        fromFile,
-        bucketName,
-        date(timestamp, '{timezoneModifier}') AS day,
-        datetime(timestamp, '{timezoneModifier}') AS datetime
-    FROM
-        phoneUsageRecords
-    ORDER by
-        fromFile,
-        bucketName,       
-        day
-    limit 100;
-                   ''')
-    result = cursor.fetchall()
-
-
-    # Print the result
-    for row in result:
-        print(row)
-
-    # saveAsCsv(
-    #     'perDay.csv', [['fromFile', 'bucketName', 'day', 'durationSum']]+result)
 
 
 def saveAsCsv(filename, records):
