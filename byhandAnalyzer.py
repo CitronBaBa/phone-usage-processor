@@ -24,7 +24,7 @@ def analyzeByhand(inputObjects):
             
             # group by app
             newByAppResults = analyzeBucket(bucket, byApp)
-            newByAppResults.sort(key=lambda x: (x['date'], -x['duration']))
+            newByAppResults.sort(key=lambda x: (x['date']))
             
             # populate data for csv
             results.extend([ [filename, bucketName, x['date'], x['duration'] ] for x in newResults])
@@ -34,6 +34,10 @@ def analyzeByhand(inputObjects):
     saveAsCsv(outputDirectory, 'perDayAndApp.csv', [ ['fromFile', 'bucketName', 'date', 'app', 'duration'] ] + byAppResults)
 
 
+# groupKeyLambda should take an event and return a tuple
+# This tuple is essentially a category, under which calculation (things like sum or de-duplication) will be conducted 
+# This tuple is in format of ((keyName, value), ...)
+# Using tuple so that it is hashable
 def analyzeBucket(bucket, groupKeyLambda):
     events = bucket['events']
     eventGroups = {}
@@ -101,7 +105,7 @@ def sumEvents(events):
             byDates[startDate] = abs((end - start).total_seconds())
             
         # TODO: handle cross date event better 
-        # end = str(event['_endTs'].date())
+        # endDate = str(event['_endTs'].date())
         # if start != end:
         #     byDates[start]
         
